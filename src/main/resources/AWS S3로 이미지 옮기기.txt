@@ -1,0 +1,75 @@
+------------------------------------------------------------------------------------------
+질문
+로컬 데이터 베이스를 사용하여 스프링 부트를 실습하고 있습니다.
+관련 이미지는 현재 resources\static\images 폴더에 들어 있습니다.
+그리고, templates\productList.html 파일에 다음과 같이 코딩이 되어 있습니다.
+<img th:src="@{${product.imageUrl}}" class="card-img-top" style="height: 200px; object-fit: cover;">
+
+이것을 aws의 스토리지 서비스를 사용하려면 어디에 무엇을 수정해야 하나요?
+------------------------------------------------------------------------------------------
+답변
+AWS 스토리지 서비스로 이미지를 옮기고 사용하는 방법은 보통 \*\*AWS S3 (Simple Storage Service)\*\*를 많이 씁니다.
+`resources/static/images` 폴더에 있던 이미지를 AWS S3에 올리고, 웹에서 그 이미지를 불러오도록 URL을 바꾸는 작업입니다.
+
+---
+
+## 1. 기존 구조 (로컬 파일 참조)
+
+```html
+<img th:src="@{${product.imageUrl}}" class="card-img-top" style="height: 200px; object-fit: cover;">
+```
+
+* `product.imageUrl`이 `/images/파일명` 같은 상대 경로여서
+* `resources/static/images` 내부 파일을 직접 불러옵니다.
+
+---
+
+## 2. AWS S3로 이미지 옮기기
+
+* AWS S3 버킷 생성 (예: `my-bucket`)
+* `images/` 폴더 구조로 이미지 업로드
+* 업로드 후 이미지 URL 획득
+  ex) `https://my-bucket.s3.amazonaws.com/images/cappuccino01.png`
+
+---
+
+## 3. 스프링 부트 코드 수정 (이미지 URL 변경)
+
+### 1) `Product` 클래스 `imageUrl` 필드 값 수정
+
+```java
+// 기존: "/images/cappuccino01.png"
+String imageUrl = "https://my-bucket.s3.amazonaws.com/images/cappuccino01.png";
+```
+
+* 즉, 이미지 URL을 AWS S3에 있는 **절대 경로**로 바꿔야 합니다.
+
+---
+
+### 2) Thymeleaf 템플릿 수정
+
+```html
+<img th:src="${product.imageUrl}" class="card-img-top" style="height: 200px; object-fit: cover;">
+```
+
+* `@{}` 표현식을 제거하고, `th:src`를 URL 그대로 사용하도록 합니다.
+* 이유: S3 URL은 절대 경로이므로, `@{}`가 붙으면 상대경로 처리되어 오류가 날 수 있습니다.
+
+---
+
+## 4. 요약
+
+| 작업 항목                       | 변경 내용                                                              |
+| --------------------------- | ------------------------------------------------------------------ |
+| 이미지 파일 위치              | `resources/static/images` → AWS S3 버킷                              |
+| `Product.imageUrl` 데이터     | 상대경로(`/images/..`) → AWS S3 절대 URL                                 |
+| Thymeleaf 이미지 태그 (`th:src`) | `th:src="@{${product.imageUrl}}"` → `th:src="${product.imageUrl}"` |
+
+---
+
+## 5. 추가 팁
+
+* AWS S3 버킷 퍼블릭 접근 설정 및 CORS 설정이 필요합니다.
+* 나중에 Spring에서 S3에 직접 업로드하는 기능을 추가할 수도 있습니다 (AWS SDK 활용).
+
+필요하면 AWS S3 버킷 만드는 방법, 퍼미션 설정, Spring Boot에서 S3 연동하는 코드도 알려드릴게요!

@@ -1,0 +1,25 @@
+show databases;
+create database shopping;
+use shopping ;
+show tables ;
+
+CREATE TABLE products (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100),
+    price INT,
+    description TEXT,
+    image_url VARCHAR(255)
+);
+
+INSERT INTO products (id, name, price, description, image_url) VALUES
+(1, '카푸치노', 4500, '맛있는 카푸치노', '/images/cappuccino01.png'),
+(2, '크로아상', 5000, '빵은 역시 크로아상^^', '/images/croissant_01.png'),
+(3, '우유', 3000, '따듯한 우유 조아요ㅎㅎ', '/images/milk01.jpg');
+
+commit;
+
+select * from products ;
+
+-- update products set name = '하하하' where id = 1;
+-- update products set name = '카푸치노' where id = 1;
+commit ;
