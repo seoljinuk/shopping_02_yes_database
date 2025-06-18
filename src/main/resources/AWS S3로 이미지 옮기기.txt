@@ -26,10 +26,10 @@ AWS 스토리지 서비스로 이미지를 옮기고 사용하는 방법은 보�
 
 ## 2. AWS S3로 이미지 옮기기
 
-* AWS S3 버킷 생성 (예: `my-bucket`)
+* AWS S3 버킷 생성 (예: `image-bucket`)
 * `images/` 폴더 구조로 이미지 업로드
 * 업로드 후 이미지 URL 획득
-  ex) `https://my-bucket.s3.amazonaws.com/images/cappuccino01.png`
+  ex) `https://image-bucket.s3.amazonaws.com/images/cappuccino01.png`
 
 ---
 
@@ -39,7 +39,7 @@ AWS 스토리지 서비스로 이미지를 옮기고 사용하는 방법은 보�
 
 ```java
 // 기존: "/images/cappuccino01.png"
-String imageUrl = "https://my-bucket.s3.amazonaws.com/images/cappuccino01.png";
+String imageUrl = "https://image-bucket.s3.amazonaws.com/images/cappuccino01.png";
 ```
 
 * 즉, 이미지 URL을 AWS S3에 있는 **절대 경로**로 바꿔야 합니다.
